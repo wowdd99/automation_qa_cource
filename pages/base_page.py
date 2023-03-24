@@ -10,7 +10,8 @@ class BasePage:
         self.driver.get(self.url)
 
     def element_is_visible(self, locator, timeout=5):
-        return wait(self.driver,timeout).until(EC.visibility_of_element_located(locator))
+        self.go_to_element(self.element_is_present(locator))
+        return wait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
 
     def elements_are_visible(self, locator, timeout=5):
         return wait(self.driver,timeout).until(EC.visibility_of_all_elements_located(locator))
@@ -28,11 +29,15 @@ class BasePage:
     def elements_is_clickable(self, locator, timeout=5):
         return wait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
 
-    def go_to_element(self,element):
-        self.driver.execute_script("argument[0].scrollIntoView();", element)
+    def go_to_element(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
+    def remove_footer(self):
+        self.driver.execute_script("document.getElementsByTagName('footer')[0].remove();")
+        self.driver.execute_script("document.getElementsById('close-fixedban').remove();")
 
-
-
+    def remove_fixedban(self):
+        self.driver.execute_script("document.getElementById('fixedban').style.display = 'none'")
+        print('Remove Fixedban')
 
 
