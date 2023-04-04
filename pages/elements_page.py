@@ -2,12 +2,13 @@ from generator.generator import generated_person
 from locators.elements_page_locators import TextBoxPageLocators, CheckBoxPageLocators, WebTablePageLocators
 from pages.base_page import BasePage
 import random
-import time
+import allure
 
 
 class TextBoxPage(BasePage):
     locators = TextBoxPageLocators()
 
+    @allure.step("Fill in all fields")
     def fill_all_fields(self):
         person_info = next(generated_person())
         full_name = person_info.full_name
@@ -21,6 +22,7 @@ class TextBoxPage(BasePage):
         self.element_is_visible(self.locators.SUBMIT).click()
         return full_name, email,current_address, permanent_address
 
+    @allure.step('Check filled form')
     def check_filled_form(self):
         full_name = self.element_is_present(self.locators.CREATED_FULL_NAME).text.split(':')[1]
         email = self.element_is_present(self.locators.CREATED_EMAIL).text.split(':')[1]
@@ -32,9 +34,11 @@ class TextBoxPage(BasePage):
 class CheckBoxPage(BasePage):
     locators = CheckBoxPageLocators()
 
+    @allure.step('Open full list')
     def open_full_list(self):
         self.element_is_visible(self.locators.EXPAND_ALL_BUTTON).click()
 
+    @allure.step('Click random items')
     def click_random_checkbox(self):
         item_list = self.elements_are_visible(self.locators.ITEM_LIST) #весь список чекбоксов
         count = 17  #рандомное количество раз
@@ -48,6 +52,7 @@ class CheckBoxPage(BasePage):
             else:
                 break
 
+    @allure.step('Get checked checkbox')
     def get_checked_checkboxes(self):
         checked_list = self.elements_are_present(self.locators.CHECKED_ITEMS) #список выбранных элементов
         data = []
@@ -57,6 +62,7 @@ class CheckBoxPage(BasePage):
         # print(data)
         return str(data).replace(' ', '').replace('doc', '').replace('.', '').lower()
 
+    @allure.step('Get output result')
     def get_output_result(self):
         result_list = self.elements_are_present(self.locators.OUTPUT_RESULT)
         data = []
@@ -66,12 +72,17 @@ class CheckBoxPage(BasePage):
         return str(data).replace(' ', '').lower()
 
 
+@allure.feature('WebTable')
 class WebTablePage(BasePage):
     locators = WebTablePageLocators()
 
+    @allure.step('add new person')
     def add_new_person(self):
+        # чтобы рандомно выбирало количество людей
+        # сount = random.randint(1,3)
         count = 1
         while count != 0:
+            #отправляем в некст чтобы вытягивало одну итерацию
             person_info = next(generated_person())
             firstname = person_info.firstname
             lastname = person_info.lastname
@@ -90,48 +101,23 @@ class WebTablePage(BasePage):
             count -= 1
             return [firstname, lastname, str(age), email, str(salary), department]
 
-
+    @allure.title('Check search for human in the table')
     def check_new_added_person(self):
         people_list = self.elements_are_present(self.locators.FULL_PEOPLE_LIST)
         data = []
         for item in people_list:
+            # data.append(item.text)
+            # splitlines убирает \n  и делает отдельными элементы
             data.append(item.text.splitlines())
+        # print(data)
         return data
 
+    @allure.title('Search pearson in the table')
     def search_some_person(self, key_word):
         self.element_is_visible(self.locators.SEARCH_INPUT).send_keys(key_word)
 
     def check_search_person(self):
         delete_button = self.element_is_present(self.locators.DELETE_BUTTON)
-        row = delete_button.find_element_by_xpath(self.locators.ROW_PARENT)
+        row = delete_button.find_element("xpath", self.locators.ROW_PARENT)
         return row.text.splitlines()
 
-    def update_person_info(self):
-        person_info = next(generated_person())
-        age = person_info.age
-        self.element_is_visible(self.locators.UPDATE_BUTTON).click()
-        self.element_is_visible(self.locators.AGE_INPUT).clear()
-        self.element_is_visible(self.locators.AGE_INPUT).send_keys(age)
-        self.element_is_visible(self.locators.SUBMIT).click()
-        return str(age)
-
-    def delete_person(self):
-        self.element_is_visible(self.locators.DELETE_BUTTON).click()
-
-    def check_deleted(self):
-        return self.element_is_present(self.locators.NO_ROWS_FOUND).text
-
-    def select_up_to_some_rows(self):
-        count = [5, 10, 20, 25, 50, 100]
-        data = []
-        for x in count:
-            count_row_button = self.element_is_present(self.locators.COUNT_ROW_LIST)
-            self.go_to_element(count_row_button)
-            count_row_button.click()
-            self.element_is_visible((By.CSS_SELECTOR, f'option[value="{x}"]')).click()
-            data.append(self.check_count_rows())
-        return data
-
-    def check_count_rows(self):
-        list_rows = self.elements_are_present(self.locators.FULL_PEOPLE_LIST)
-        return len(list_rows)
