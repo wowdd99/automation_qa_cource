@@ -101,7 +101,7 @@ class WebTablePage(BasePage):
             count -= 1
             return [firstname, lastname, str(age), email, str(salary), department]
 
-    @allure.title('Check search for human in the table')
+    @allure.step('Check search for human in the table')
     def check_new_added_person(self):
         people_list = self.elements_are_present(self.locators.FULL_PEOPLE_LIST)
         data = []
@@ -112,12 +112,22 @@ class WebTablePage(BasePage):
         # print(data)
         return data
 
-    @allure.title('Search pearson in the table')
+    @allure.step('Search pearson in the table')
     def search_some_person(self, key_word):
         self.element_is_visible(self.locators.SEARCH_INPUT).send_keys(key_word)
 
+    @allure.step('check found person')
     def check_search_person(self):
         delete_button = self.element_is_present(self.locators.DELETE_BUTTON)
         row = delete_button.find_element("xpath", self.locators.ROW_PARENT)
         return row.text.splitlines()
 
+    @allure.step('check updating person')
+    def update_person_info(self):
+        person_info = next(generated_person())
+        age = person_info.age
+        self.element_is_visible(self.locators.UPDATE_BUTTON).click()
+        self.element_is_visible(self.locators.AGE_INPUT).clear()
+        self.element_is_visible(self.locators.AGE_INPUT).send_keys(age)
+        self.element_is_visible(self.locators.SUBMIT).click()
+        return str(age)

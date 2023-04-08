@@ -57,3 +57,13 @@ class TestElements:
             print(key_word)
             print(table_result)
             assert key_word in table_result, 'the person was not found in the table'
+
+        @allure.title('Checking to update the persons info in the table')
+        def test_web_table_update_person_info(self, driver):
+            web_table_page = WebTablePage(driver, 'https://demoqa.com/webtables')
+            web_table_page.open()
+            lastname = web_table_page.add_new_person()[1]
+            web_table_page.search_some_person(lastname)
+            age = web_table_page.update_person_info()
+            row = web_table_page.check_search_person()
+            assert age in row, "the person card has not been changed"
