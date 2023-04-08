@@ -39,7 +39,7 @@ class TestElements:
     @allure.feature('WebTable')
     class TestWebTable:
 
-        @allure.title('Сheck adding a person to the table')
+        @allure.title('Check adding a person to the table')
         def test_web_table_add_person(self, driver):
             web_table_page = WebTablePage(driver, 'https://demoqa.com/webtables')
             web_table_page.open()
@@ -47,7 +47,7 @@ class TestElements:
             table_result = web_table_page.check_new_added_person()
             assert new_person in table_result
 
-        @allure.title('Search some person to the table')
+        @allure.title('Check the person search in the table')
         def test_web_table_search_person(self, driver):
             web_table_page = WebTablePage(driver, 'https://demoqa.com/webtables')
             web_table_page.open()
@@ -58,7 +58,7 @@ class TestElements:
             print(table_result)
             assert key_word in table_result, 'the person was not found in the table'
 
-        @allure.title('Checking to update the persons info in the table')
+        @allure.title('Check person update in table')
         def test_web_table_update_person_info(self, driver):
             web_table_page = WebTablePage(driver, 'https://demoqa.com/webtables')
             web_table_page.open()
@@ -68,7 +68,7 @@ class TestElements:
             row = web_table_page.check_search_person()
             assert age in row, "the person card has not been changed"
 
-        @allure.title('Checking to remove a person from the table')
+        @allure.title('Check the removal of a person from the table')
         def test_web_table_delete_person(self, driver):
             web_table_page = WebTablePage(driver, 'https://demoqa.com/webtables')
             web_table_page.open()
